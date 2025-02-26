@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="col-sm-5"style="margin-left: 250px;">
+    {% if messages %}
+{% for message in messages %}
+    <p {% if message.tags %} class="alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+{% endfor %}
+{% endif %}
+</div>
+{% endblock content %}
