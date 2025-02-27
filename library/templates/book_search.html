@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background:rgb(150,190,186);
+        }
+    </style>
+</head>
+<body>
+    <h1> Search Result </h1>
+    <strong>{% for book in books %}
+    <li>{{book.book_name}} 
+        - {{book.publish_year}}
+        {% for auth in book.authors.all %}
+        -{{auth.author_name}}
+        {%  endfor %}
+    </li>
+    {% empty %}
+    <li>No books</li>
+    {% endfor %}</strong>
+</body>
+</html>

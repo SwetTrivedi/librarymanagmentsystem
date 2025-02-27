@@ -2,6 +2,8 @@ from django.shortcuts import render, HttpResponseRedirect
 from . forms import Signupform , Loginform
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
+from .models import Book
+from django.db.models import Q
 # Create your views here.
 def home (request):
     return render(request,'home.html')
@@ -44,3 +46,15 @@ def userdashboard(request):
 def userlogout(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+
+
+def book_search(request):
+    query=request.GET.get('q','')
+    books=Book.objects.all()
+    if query:
+        books=Book.objects.filter(Q(book_name__icontains=query) | 
+                                  Q(authors__author_name__icontains=query) | 
+                                  Q(publish_year__icontains=query))
+    return render(request,'book_search.html',{'books':books,'query':query})
