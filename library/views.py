@@ -32,6 +32,8 @@ def userlogin(request):
                 if user is not None:
                     login(request,user)
                     messages.success(request,"Login Sucessfully !!")
+                    if  user.is_superuser:
+                        return HttpResponseRedirect('/admindashboard/')
                     return HttpResponseRedirect('/dashboard/')
         else:
             form=Loginform()
@@ -39,6 +41,11 @@ def userlogin(request):
     else:
         return HttpResponseRedirect('/dashboard/')
     
+
+def admindashboard(request):
+
+    return render(request,'admindashboard.html')
+
 
 def userdashboard(request):
     return render(request,'dashboard.html')
@@ -58,3 +65,24 @@ def book_search(request):
                                   Q(authors__author_name__icontains=query) | 
                                   Q(publish_year__icontains=query))
     return render(request,'book_search.html',{'books':books,'query':query})
+
+
+
+
+def book_list(request):
+    books=Book.objects.all().order_by('id')
+    return render(request,'booklist.html',{'books':books})
+
+def viewbooks(request,pk):
+    book=Book.objects.get(pk=pk)
+    return render(request,'bookdetails.html',{'book':book})
+
+
+def deletebook(request,pk):
+    pi=Book.objects.get(pk=pk)
+    pi.delete()
+    return HttpResponseRedirect('/booklist/')
+
+
+def feedback_page(request):
+    return render(request,'feedback.html')

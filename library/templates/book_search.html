@@ -11,8 +11,8 @@
     </style>
 </head>
 <body>
-    <h1> Search Result </h1>
-    <strong>{% for book in books %}
+    <h1> Search Result  {{query}} </h1>
+    <strong>{% for book in books %}<br>
     <li>{{book.book_name}} 
         - {{book.publish_year}}
         {% for auth in book.authors.all %}

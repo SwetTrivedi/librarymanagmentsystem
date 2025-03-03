@@ -24,3 +24,4 @@ class Loginform(AuthenticationForm):
     password=forms.CharField(label=_("Password"),
                              strip=False,widget=forms.PasswordInput
                              (attrs={'autocomplete':'current-password','class':'form-control'})) 
+    

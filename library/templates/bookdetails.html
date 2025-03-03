@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class="col-sm-6" style='margin-top:10px;'>
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">{{book.book_name}}</h2>
+        {% for auth in book.authors.all %}
+            <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
+        {% endfor %}
+    
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <p><strong>Published Date:</strong>{{book.publish_year}}</p>
+            </div>
+        </div>
+    </div>
+</div> 
+<div class="mt-4">
+    <a href="{% url 'deletebook' book.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
+</div>
+</div>
+{% endblock content %}

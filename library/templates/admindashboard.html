@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class='col-sm-12' style="margin-top:100px;">
+<h1 style="color:white;"><i>Welcome Admin</i></h1><br>
+<a href="{% url 'booklist' %}"><input type="submit" value="View Details" style="margin:20px;" class='btn btn-primary'></a>
+</div>
+{% endblock content %}

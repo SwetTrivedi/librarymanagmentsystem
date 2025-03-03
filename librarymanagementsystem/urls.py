@@ -24,5 +24,10 @@ urlpatterns = [
     path('login/',views.userlogin, name='login'),
     path('logout/',views.userlogout, name="userlogout"),
     path('dashboard/',views.userdashboard,name="dashboard"),
-    path('search/',views.book_search,name="searchbook")
+    path('admindashboard/',views.admindashboard,name="adminpanel"),
+    path('search/',views.book_search,name="searchbook"),
+    path('booklist/',views.book_list,name="booklist"),
+    path('bookdetail/<int:pk>/',views.viewbooks,name='viewsbook'),
+    path('bookdelete/<int:pk>/',views.deletebook,name='deletebook'),
+    path('feedback',views.feedback_page,name='feedback'),
 ]
