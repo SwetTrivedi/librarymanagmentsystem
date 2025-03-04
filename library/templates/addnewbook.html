@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class='col-sm-5 mt-5' style='margin-left:250px;'>
+    <form action="" method='POST'>
+    {% csrf_token %}
+    {{forms.as_p}}
+    <input type="submit" class="btn btn-success"value="Submit">
+</form><br>
+<a href="{% url 'adminpanel' %}"><input type="submit" class="btn btn-success"value="Back dashboard"></a>
+
+</div>
+{% endblock content %}

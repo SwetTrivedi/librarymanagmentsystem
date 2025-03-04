@@ -28,6 +28,9 @@ urlpatterns = [
     path('search/',views.book_search,name="searchbook"),
     path('booklist/',views.book_list,name="booklist"),
     path('bookdetail/<int:pk>/',views.viewbooks,name='viewsbook'),
+    path('addingnewbook',views.addbook,name='addbook'),
+    path('editbook/<int:id>/',views.updatebook,name='editbook'),
     path('bookdelete/<int:pk>/',views.deletebook,name='deletebook'),
     path('feedback',views.feedback_page,name='feedback'),
+    path('comments/',views.addcomment,name='comment'),
 ]

@@ -12,3 +12,6 @@ class Book(models.Model):
     publish_year=models.DateField()
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])
+    
+class Feedback(models.Model):
+    comment=models.CharField(max_length=200)

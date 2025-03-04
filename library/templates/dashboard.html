@@ -8,4 +8,10 @@
 {% endfor %}
 {% endif %}
 </div>
+<div class="col-sm-12" style="margin:50px;">
+    {% csrf_token %}
+<h1><i>Welcome {{fullname}} To Our Library </i></h1><br>
+<a href="{% url 'booklist' %}"><input type="submit" class ="btn btn-primary"value="View Books"></a>
+</div>
+
 {% endblock content %}

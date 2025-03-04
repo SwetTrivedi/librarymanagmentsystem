@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect
-from . forms import Signupform , Loginform
+from . forms import Signupform , Loginform  ,  Addbook ,Comment
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from .models import Book
@@ -34,7 +34,10 @@ def userlogin(request):
                     messages.success(request,"Login Sucessfully !!")
                     if  user.is_superuser:
                         return HttpResponseRedirect('/admindashboard/')
-                    return HttpResponseRedirect('/dashboard/')
+                    else:
+                        books=Book.objects.all().order_by('id')
+                        return render(request,'dashboard.html',{'books':books})
+
         else:
             form=Loginform()
         return render (request,'login.html',{'form':form})
@@ -48,7 +51,9 @@ def admindashboard(request):
 
 
 def userdashboard(request):
-    return render(request,'dashboard.html')
+    user=request.user
+    full_name=user.get_full_name()
+    return render(request,'dashboard.html',{'fullname':full_name})
 
 def userlogout(request):
     logout(request)
@@ -70,12 +75,43 @@ def book_search(request):
 
 
 def book_list(request):
-    books=Book.objects.all().order_by('id')
-    return render(request,'booklist.html',{'books':books})
+        books=Book.objects.all().order_by('id')
+        return render(request,'booklist.html',{'books':books})
 
 def viewbooks(request,pk):
     book=Book.objects.get(pk=pk)
     return render(request,'bookdetails.html',{'book':book})
+
+
+def addbook(request):
+    if request.user.is_authenticated:
+        if request.method=='POST':
+            form=Addbook(request.POST)
+            if form.is_valid():
+                book=form.save(commit=False)
+                book.save()
+                book.authors.set(form.cleaned_data['authors'])
+                form= Addbook()
+    
+        else:
+            form= Addbook()
+        return render(request,'addnewbook.html',{'forms':form})
+
+
+def updatebook(request,id):
+    if request.user.is_authenticated:
+        if request.method=="POST":
+            pi=Book.objects.get(pk=id)
+            form=Addbook(request.POST,instance=pi)
+            if form.is_valid():
+                book=form.save(commit=False)
+                book.save()
+                book.authors.set(form.cleaned_data['authors'])
+                form=Addbook
+        else:
+            pi=Book.objects.get(pk=id)
+            form=Addbook(instance=pi)
+        return render(request,'update.html',{'form':form})
 
 
 def deletebook(request,pk):
@@ -86,3 +122,17 @@ def deletebook(request,pk):
 
 def feedback_page(request):
     return render(request,'feedback.html')
+
+
+
+
+def addcomment(request):
+    if request.user.is_authenticated:
+        if request.method=='POST':
+            form=Comment(request.POST)
+            if form.is_valid():
+                form.save()
+                form=Comment()
+        else:
+            form=Comment()
+        return render(request,'comment.html',{'form':form})

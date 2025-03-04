@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class='col-sm-5 mt-5' style='margin-left:250px;'>
+    <form action="" method='POST'>
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" class="btn btn-success"value="Submit"><br>
+</form><br>
+<a href="{% url 'booklist' %}"><input type="submit" class="btn btn-info"value="BacktoList"></a>
+</div>
+{% endblock content %}

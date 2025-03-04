@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField
 from django.contrib.auth.models import User
 from django.utils.translation import gettext,gettext_lazy as _
-
+from .models import Book,Author,Feedback
 
 class Signupform(UserCreationForm):
     password1=forms.CharField(label="Password" ,widget=forms.PasswordInput(attrs={'class':'form-control'}))
@@ -25,3 +25,46 @@ class Loginform(AuthenticationForm):
                              strip=False,widget=forms.PasswordInput
                              (attrs={'autocomplete':'current-password','class':'form-control'})) 
     
+
+# class Addbook(Book):
+#     class Meta:
+#         model=Book
+#         fields=['book_name','publish_year','authors']
+
+
+
+class Addbook(forms.ModelForm):
+    authors = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Enter authors name'}),
+    help_text = 'Enter multiple authors by separeted by commas'
+    )
+    class Meta:
+        model = Book    
+        fields = ['book_name', 'authors', 'publish_year']
+        widgets = {
+            'book_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter book name'}),
+            'publish_year': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+
+            }
+    def clean_authors(self):
+   
+        data = self.cleaned_data['authors']
+        author_name= [name.strip() for name in data.split(',') if name.strip()]  
+
+        if not author_name:
+            raise forms.ValidationError("Please enter at least one author.")
+
+        authors = []
+        for name in author_name:
+            author, created = Author.objects.get_or_create(author_name=name)  
+            authors.append(author)  
+
+        return authors
+    
+
+class Comment(forms.ModelForm):
+    class Meta:
+        model=Feedback
+        fields=['comment']
+        widgets={'comment':forms.Textarea(attrs={'class': 'form-control'})}
+
+

@@ -4,20 +4,39 @@
 <div class="col-sm-6" style='margin-top:10px;'>
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">{{book.book_name}}</h2>
+        <h2 class="card-title">{{book.book_name}}&nbsp;&nbsp;&nbsp;<i class="fa-regular fa-star"><i class="fa-regular fa-star"><i class="fa-regular fa-star">
+            <i class="fa-regular fa-star"><i class="fa-regular fa-star"></i></i></i></i></i></h2>
         {% for auth in book.authors.all %}
             <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
         {% endfor %}
     
         <div class="row mb-3">
             <div class="col-md-4">
-                <p><strong>Published Date:</strong>{{book.publish_year}}</p>
+                <p><strong>Published Date:</strong>{{book.publish_year}}</p>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa-regular fa-thumbs-up" style="font-size:25px;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'comment' %}"><i class="fa-solid fa-comments" style="font-size:20px;"></i></a></i>
             </div>
         </div>
     </div>
 </div> 
 <div class="mt-4">
-    <a href="{% url 'deletebook' book.pk %}" class="btn btn-danger">Delete</a>
+    {% if perms.library.delete_book %}
+        <form action="{% url 'deletebook' book.pk %}" method='post' class="d-inline">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-danger" value="Delete">
+        </form>
+    {% endif %}
+
+    {% if perms.library.edit_book %}
+    <form action="{% url 'editbook' book.pk %}"  class="d-inline">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Edit">
+    </form>
+    {% else %}
+        <a href="{% url 'booklist' %}" class="btn btn-success">Borrow Book</a>
+        <a href="{% url 'booklist' %}" class="btn btn-danger">Return Book</a>
+    {% endif %}
+
     <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
 </div>
 </div>

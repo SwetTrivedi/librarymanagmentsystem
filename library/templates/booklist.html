@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="row row-cols-1 row-cols-md-3 g-4" style='margin-top:100px;'></div>
+<div class="row row-cols-2 row-cols-md-3 g-4 " style='margin-top:100px;'></div>
     {% for book in books %}
     <div class="col">
         <div class="card h-100">
@@ -10,8 +10,16 @@
                 {% for auth in book.authors.all %}
                     <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
                 {% endfor %}
-                <a href="{% url 'viewsbook' book.id %}" class="btn btn-sm btn-primary">View Details</a>
+                <a href="{% url 'viewsbook' book.id %}" class="btn btn-sm btn-primary">View Details</a><br>
             </div>
+            {% if perms.library.backDashboard_book %}
+            <form action="{% url 'adminpanel' %}"  class="d-inline">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger" value="back Dashboard">
+            </form>
+            {% else %}
+                <a href="{% url 'dashboard' %}"><input type="submit" class="btn btn-primary" value="Back Dashboard"></a>
+            {% endif %}
         </div>
     </div>
     {% empty %}
