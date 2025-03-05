@@ -2,3 +2,12 @@ body {
     background-color:rgb(107, 45, 45);
     color:antiquewhite;
 }
+.star {
+    font-size: 30px;
+    color: gray;
+    text-decoration: none;
+}
+
+.star.active {
+    color: yellow; /* Selected stars yellow honge */
+}

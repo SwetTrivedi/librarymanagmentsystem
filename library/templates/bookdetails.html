@@ -4,21 +4,50 @@
 <div class="col-sm-6" style='margin-top:10px;'>
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">{{book.book_name}}&nbsp;&nbsp;&nbsp;<i class="fa-regular fa-star"><i class="fa-regular fa-star"><i class="fa-regular fa-star">
-            <i class="fa-regular fa-star"><i class="fa-regular fa-star"></i></i></i></i></i></h2>
+        <h2 class="card-title">{{book.book_name}}&nbsp;&nbsp;&nbsp;<p>
+            {% if perms.library.rate_book %}
+            {% else %}
+            <p>
+            <a href="{% url 'rate-book' book.id 1 %}"><i class="fa-regular fa-star"></i></a>
+            <a href="{% url 'rate-book' book.id 2 %}"><i class="fa-regular fa-star"></i></a>
+            <a href="{% url 'rate-book' book.id 3 %}"><i class="fa-regular fa-star"></i></a>
+            <a href="{% url 'rate-book' book.id 4 %}"><i class="fa-regular fa-star"></i></a>
+            <a href="{% url 'rate-book' book.id 5 %}"><i class="fa-regular fa-star"></i></a>
+            </p>
+            {% endif %}
+        </h2>
+
+
         {% for auth in book.authors.all %}
             <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
         {% endfor %}
     
+
         <div class="row mb-3">
             <div class="col-md-4">
-                <p><strong>Published Date:</strong>{{book.publish_year}}</p>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa-regular fa-thumbs-up" style="font-size:25px;">
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="{% url 'comment' %}"><i class="fa-solid fa-comments" style="font-size:20px;"></i></a></i>
+                <p><strong>Published Date:</strong>{{book.publish_year}}
+                    {% if perms.library.addcomment %}
+                    {% else %}
+                        </p>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <form action="{% url 'like-book' book.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" style="border: none; background: none;">
+                                {% if user_has_liked %}
+                                    <i class="fa-solid fa-thumbs-up" style="color:blue; font-size:20px;"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-thumbs-up" style="font-size:20px;"></i>
+                                {% endif %}
+                            </button>
+                            &nbsp;&nbsp;<a href="{% url 'comment' book.id %}"><i class="fa-solid fa-comments" style="font-size:20px;"></i></a></i>
+                        </form>
+                    {% endif %}
             </div>
         </div>
     </div>
 </div> 
+
+
+
 <div class="mt-4">
     {% if perms.library.delete_book %}
         <form action="{% url 'deletebook' book.pk %}" method='post' class="d-inline">
@@ -41,3 +70,4 @@
 </div>
 </div>
 {% endblock content %}
+

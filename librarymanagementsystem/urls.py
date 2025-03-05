@@ -32,5 +32,8 @@ urlpatterns = [
     path('editbook/<int:id>/',views.updatebook,name='editbook'),
     path('bookdelete/<int:pk>/',views.deletebook,name='deletebook'),
     path('feedback',views.feedback_page,name='feedback'),
-    path('comments/',views.addcomment,name='comment'),
+    path('comments/<int:id>/',views.addcomment,name='comment'),
+    path('rate/<int:pk>/<int:score>/', views.rate_book,name="rate-book"),
+    path('like/<int:pk>/',views.book_like, name='like-book'),
+
 ]

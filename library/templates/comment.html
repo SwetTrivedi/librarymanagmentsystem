@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class='col-sm-4 mt-5' style="margin-left:20px;">
+<div class='col-5 row row-5 mt-5' style="margin-left:20px;">
     <form action="" method="POST">
         {% csrf_token %}
         {{form.as_p}}
-        <input type="submit" value="Comment" class ="btn btn-primary">
+        <input type="submit" class ="btn btn-primary" value="Comment">
     </form>
 </div>
 {% endblock content %}

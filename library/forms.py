@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField
 from django.contrib.auth.models import User
 from django.utils.translation import gettext,gettext_lazy as _
-from .models import Book,Author,Feedback
+from .models import Book,Author,Comment
 
 class Signupform(UserCreationForm):
     password1=forms.CharField(label="Password" ,widget=forms.PasswordInput(attrs={'class':'form-control'}))
@@ -61,10 +61,11 @@ class Addbook(forms.ModelForm):
         return authors
     
 
-class Comment(forms.ModelForm):
+class Usercomment(forms.ModelForm):
     class Meta:
-        model=Feedback
-        fields=['comment']
-        widgets={'comment':forms.Textarea(attrs={'class': 'form-control'})}
+        model=Comment
+        fields=['text']
+        labels={'text':'Comment'}
+        widgets={'text':forms.Textarea(attrs={'class': 'form-control'})}
 
 

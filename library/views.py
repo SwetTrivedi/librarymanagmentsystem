@@ -1,8 +1,8 @@
-from django.shortcuts import render, HttpResponseRedirect
-from . forms import Signupform , Loginform  ,  Addbook ,Comment
+from django.shortcuts import render, HttpResponseRedirect,redirect
+from . forms import Signupform , Loginform  ,  Addbook ,Usercomment
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from .models import Book
+from .models import Book ,  Rating, Like
 from django.db.models import Q
 # Create your views here.
 def home (request):
@@ -126,13 +126,36 @@ def feedback_page(request):
 
 
 
-def addcomment(request):
-    if request.user.is_authenticated:
-        if request.method=='POST':
-            form=Comment(request.POST)
+def addcomment(request,id):
+        if request.method=="POST":
+            pi=Book.objects.get(pk=id)
+            form=Usercomment(request.POST)
             if form.is_valid():
-                form.save()
-                form=Comment()
+                comment=form.save(commit=False)
+                comment.user=request.user
+                comment.book=pi
+                comment.save()
+                form=Usercomment()
         else:
-            form=Comment()
+            form=Usercomment()
         return render(request,'comment.html',{'form':form})
+
+
+
+
+def rate_book(request, pk ,score):
+    book = Book.objects.get(pk=pk)
+    Rating.objects.update_or_create(user=request.user, book=book, defaults={'score': score})
+    return render(request, 'bookdetails.html', {'book': book})
+
+
+
+
+def book_like(request, pk):
+    book = Book.objects.get(pk=pk)
+    like, created = Like.objects.get_or_create(user=request.user, book=book)
+    if not created:
+        like.delete()
+    total_likes = book.like_set.count()
+    user_has_liked = book.like_set.filter(user=request.user).exists()
+    return render(request, 'bookdetails.html', {'book': book,'total_likes': total_likes,'user_has_liked': user_has_liked})
