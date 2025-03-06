@@ -2,8 +2,10 @@ from django.shortcuts import render, HttpResponseRedirect,redirect
 from . forms import Signupform , Loginform  ,  Addbook ,Usercomment
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from .models import Book ,  Rating, Like
-from django.db.models import Q
+from .models import Book ,  Rating, Like , Comment ,favourite
+from django.db.models import Q , Avg
+from django.core.paginator import Paginator
+
 # Create your views here.
 def home (request):
     return render(request,'home.html')
@@ -75,12 +77,22 @@ def book_search(request):
 
 
 def book_list(request):
-        books=Book.objects.all().order_by('id')
-        return render(request,'booklist.html',{'books':books})
+        allpost=Book.objects.all().order_by('id')
+        paginator=Paginator(allpost,5)
+        pageno=request.GET.get('page')
+        pageobj=paginator.get_page(pageno)
+        return render(request,'booklist.html' ,{'books':pageobj})
+     
 
 def viewbooks(request,pk):
     book=Book.objects.get(pk=pk)
-    return render(request,'bookdetails.html',{'book':book})
+    alldata=Comment.objects.filter(book=book)
+    if request.method=='POST':
+        text=request.POST.get('text')
+        if text:
+            Comment.objects.create(user=request.user,book=book,text=text)
+            return redirect('viewsbook',pk=pk)
+    return render(request,'bookdetails.html',{'book':book , 'alldata':alldata})
 
 
 def addbook(request):
@@ -136,6 +148,7 @@ def addcomment(request,id):
                 comment.book=pi
                 comment.save()
                 form=Usercomment()
+                return HttpResponseRedirect('/booklist/')
         else:
             form=Usercomment()
         return render(request,'comment.html',{'form':form})
@@ -143,10 +156,13 @@ def addcomment(request,id):
 
 
 
-def rate_book(request, pk ,score):
-    book = Book.objects.get(pk=pk)
-    Rating.objects.update_or_create(user=request.user, book=book, defaults={'score': score})
-    return render(request, 'bookdetails.html', {'book': book})
+# def rate_book(request, pk, score):
+#     book = Book.objects.get(pk=pk)
+#     Rating.objects.update_or_create(user=request.user, book=book, defaults={'score': score})
+#     avg_rating = Rating.objects.filter(book=book).aggregate(Avg('score'))['score__avg'] or 0
+#     return render(request, 'bookdetails.html', {'book': book, 'avg_rating': avg_rating})
+
+
 
 
 
@@ -154,8 +170,21 @@ def rate_book(request, pk ,score):
 def book_like(request, pk):
     book = Book.objects.get(pk=pk)
     like, created = Like.objects.get_or_create(user=request.user, book=book)
+    print(like, created)
     if not created:
+        print('in delete')
         like.delete()
     total_likes = book.like_set.count()
     user_has_liked = book.like_set.filter(user=request.user).exists()
+    print(total_likes, user_has_liked)
     return render(request, 'bookdetails.html', {'book': book,'total_likes': total_likes,'user_has_liked': user_has_liked})
+
+# def fav_book(request, id):
+#     book = Book.objects.get(pk=id)
+#     fav, created = favourite.objects.get_or_create(user=request.user, book=book)
+#     if not created:
+#         fav.delete() 
+#     return redirect('booklist')
+
+
+

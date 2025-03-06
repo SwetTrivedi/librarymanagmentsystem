@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Author
 # Register your models here.
-from .models import Book ,Rating,Comment,Like
+from .models import Book ,Rating,Comment,Like,favourite
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
@@ -25,4 +25,8 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
+    list_display=['user','book']
+
+@admin.register(favourite)
+class FavAdmin(admin.ModelAdmin):
     list_display=['user','book']

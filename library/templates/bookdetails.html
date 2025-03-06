@@ -4,24 +4,21 @@
 <div class="col-sm-6" style='margin-top:10px;'>
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">{{book.book_name}}&nbsp;&nbsp;&nbsp;<p>
-            {% if perms.library.rate_book %}
-            {% else %}
-            <p>
-            <a href="{% url 'rate-book' book.id 1 %}"><i class="fa-regular fa-star"></i></a>
-            <a href="{% url 'rate-book' book.id 2 %}"><i class="fa-regular fa-star"></i></a>
-            <a href="{% url 'rate-book' book.id 3 %}"><i class="fa-regular fa-star"></i></a>
-            <a href="{% url 'rate-book' book.id 4 %}"><i class="fa-regular fa-star"></i></a>
-            <a href="{% url 'rate-book' book.id 5 %}"><i class="fa-regular fa-star"></i></a>
-            </p>
-            {% endif %}
+        <h2 class="card-title">{{book.book_name}}
+            {% comment %} <h3>Average Rating: {{ avg_rating|floatformat:1 }} ⭐</h3> {% endcomment %}
+            {% comment %} <div>
+                {% for i in "12345" %}
+                    <a href="{% url 'rate-book' book.id i|add:'0' %}">
+                        <i class="fa fa-star" style="color: {% if i|add:'0' <= avg_rating %}gold{% else %}gray{% endif %}; font-size: 25px;"></i>
+                    </a>
+                {% endfor %}
+            </div> {% endcomment %}
+
+
+
         </h2>
 
-
-        {% for auth in book.authors.all %}
-            <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
-        {% endfor %}
-    
+            <h6 class="card-subtitle mb-2 text-muted">Author : {{book.authors.all|join:" , "}}</h6>
 
         <div class="row mb-3">
             <div class="col-md-4">
@@ -39,6 +36,7 @@
                                 {% endif %}
                             </button>
                             &nbsp;&nbsp;<a href="{% url 'comment' book.id %}"><i class="fa-solid fa-comments" style="font-size:20px;"></i></a></i>
+                            
                         </form>
                     {% endif %}
             </div>
@@ -68,6 +66,24 @@
 
     <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
 </div>
+
+    <div>
+        <h3>Comments:</h3>
+            {% for comment in alldata %}
+                <li><strong>{{ comment.user.username }}</strong>: {{ comment.text }}</li>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
+        {% if user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                <textarea name="text" rows="3"required></textarea><br>
+                <button type="submit" class='btn btn-info'>Post Comment</button>
+            </form>
+        {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock content %}
 
