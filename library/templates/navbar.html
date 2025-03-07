@@ -28,8 +28,8 @@
               <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
             </li>
             {% comment %} <li class="nav-item">
-              <a class="nav-link" href="{% url 'favbook' %}">Favourite</a>
-            </li> {% endcomment %}
+              <a class="nav-link" href="{% url 'favbook' book_id %}">Favourite</a>
+            </li>  {% endcomment %}
             {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'feedback' %}">Feedback</a>

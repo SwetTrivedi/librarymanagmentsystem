@@ -1,11 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>My Favourite Books</h2>
-<ul>
-    {% for fav in fav_books %}
-        <li>{{ fav.book.book_name }}</li>
-    {% empty %}
-        <p>You have no favourite books yet.</p>
-    {% endfor %}
-</ul>
+<h1>My Favorite Books</h1>
+{% endfor %}
 {% endblock %}

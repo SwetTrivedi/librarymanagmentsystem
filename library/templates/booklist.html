@@ -17,6 +17,19 @@
             </form>
             {% else %}
                 <a href="{% url 'dashboard' %}"><input type="submit" class="btn btn-primary" value="Back Dashboard"></a>
+                    
+                {% comment %} <form action="{% url 'favbook' book.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">
+                        {% if book.favourites.all|length > 0 %}
+                        <i class="fa-regular fa-heart"></i>
+                        {% else %}
+                        <i class="fa-regular fa-heart"></i>
+                        {% endif %}
+                    </button>
+                </form> {% endcomment %}
+                    </a>
+
             {% endif %}
         </div>
     </div>

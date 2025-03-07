@@ -86,14 +86,12 @@ def book_list(request):
 
 def viewbooks(request,pk):
     book=Book.objects.get(pk=pk)
-    alldata=Comment.objects.filter(book=book)
     if request.method=='POST':
         text=request.POST.get('text')
         if text:
             Comment.objects.create(user=request.user,book=book,text=text)
             return redirect('viewsbook',pk=pk)
-    return render(request,'bookdetails.html',{'book':book , 'alldata':alldata})
-
+    return render(request,'bookdetails.html',{'book':book })
 
 def addbook(request):
     if request.user.is_authenticated:
@@ -139,21 +137,25 @@ def feedback_page(request):
 
 
 def addcomment(request,id):
-        if request.method=="POST":
-            pi=Book.objects.get(pk=id)
-            form=Usercomment(request.POST)
-            if form.is_valid():
-                comment=form.save(commit=False)
-                comment.user=request.user
-                comment.book=pi
-                comment.save()
-                form=Usercomment()
-                return HttpResponseRedirect('/booklist/')
-        else:
-            form=Usercomment()
-        return render(request,'comment.html',{'form':form})
+            book=Book.objects.get(pk=id)
+            comments = book.comment_set.all()
+            if request.method == "POST":
+                text = request.POST.get("text","").strip()
+                if text:
+                    Comment.objects.create(book=book, user=request.user,text=text)
+                    return redirect('comment', id=book.id)
+            return render(request,'comment.html',{'alldata':comments ,'book':book})
 
 
+def book_like(request, id):
+        comment = Comment.objects.get(pk=id)
+        if request.user.is_authenticated:
+            if request.user in comment.likes.all():
+                comment.likes.remove(request.user)  
+            else:
+                comment.likes.add(request.user)
+
+        return redirect('comment', id=comment.book.id)
 
 
 # def rate_book(request, pk, score):
@@ -164,27 +166,30 @@ def addcomment(request,id):
 
 
 
-
-
-
-def book_like(request, pk):
-    book = Book.objects.get(pk=pk)
-    like, created = Like.objects.get_or_create(user=request.user, book=book)
-    print(like, created)
-    if not created:
-        print('in delete')
-        like.delete()
-    total_likes = book.like_set.count()
-    user_has_liked = book.like_set.filter(user=request.user).exists()
-    print(total_likes, user_has_liked)
-    return render(request, 'bookdetails.html', {'book': book,'total_likes': total_likes,'user_has_liked': user_has_liked})
-
-# def fav_book(request, id):
-#     book = Book.objects.get(pk=id)
+# def fav_book(request, book_id):
+#     book = Book.objects.get(pk=book_id) 
+ 
 #     fav, created = favourite.objects.get_or_create(user=request.user, book=book)
+
 #     if not created:
 #         fav.delete() 
-#     return redirect('booklist')
+#     return redirect('booklist') 
+
+# def favorite_books(request):
+#     fav_books = Book.objects.filter(favourites__user=request.user) 
+#     return render(request, 'favourite.html', {'fav_books': fav_books})
+
+
+
+
+
+
+    # book = Book.objects.get(pk=id)
+    # fav, created = favourite.objects.get_or_create(user=request.user, book=book)
+    # if not created:
+    #     fav.delete() 
+    #     return redirect('booklist')
+    # return render(request,'favoirate.html',{'book':book})
 
 
 

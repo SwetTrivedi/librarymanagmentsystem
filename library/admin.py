@@ -21,7 +21,7 @@ class RatingAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display=['user','book','text']
+    list_display=['user','book','text','total_likes']
 
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):

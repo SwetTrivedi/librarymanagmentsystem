@@ -34,7 +34,8 @@ urlpatterns = [
     path('feedback',views.feedback_page,name='feedback'),
     path('comments/<int:id>/',views.addcomment,name='comment'),
     # path('rate/<int:pk>/<int:score>/', views.rate_book,name="rate-book"),
-    path('like/<int:pk>/',views.book_like, name='like-book'),
-    # path('favourite/<int:id>',views.fav_book, name='favbook'),
+    path('like/<int:id>/',views.book_like, name='like-book'),
+    # path('favourite/<int:book_id>/', views.fav_book, name='favbook'),
+    # path('my-favorites/', views.favorite_books, name='favorite-books'),
 
 ]

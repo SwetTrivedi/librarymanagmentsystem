@@ -28,6 +28,9 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     text = models.TextField()
+    likes = models.ManyToManyField(User,related_name='comment_likes', blank=True)
+    def total_likes(self):
+        return self.likes.count()
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -41,4 +44,4 @@ class Like(models.Model):
 
 class favourite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='favourite_book')
