@@ -37,13 +37,13 @@ class Addbook(forms.ModelForm):
     authors = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Enter authors name'}),
     help_text = 'Enter multiple authors by separeted by commas'
     )
+    publish_year = forms.DateField(required=False,widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+    book_cate=forms.CharField(label="Book Category" ,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Enter Book Category'}))
     class Meta:
         model = Book    
-        fields = ['book_name', 'authors', 'publish_year']
+        fields = ['book_name', 'authors', 'publish_year','book_cate']
         widgets = {
             'book_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter book name'}),
-            'publish_year': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-
             }
     def clean_authors(self):
    
@@ -67,5 +67,11 @@ class Usercomment(forms.ModelForm):
         fields=['text']
         labels={'text':'Comment'}
         widgets={'text':forms.Textarea(attrs={'class': 'form-control'})}
+
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields=['book_rating']
 
 

@@ -9,7 +9,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display=['id','book_name','publish_year','written_by']
+    list_display=['id','book_name','publish_year','book_cate','written_by','book_rating']
 
 # @admin.register(Feedback)
 # class FeedbackAdmin(admin.ModelAdmin):

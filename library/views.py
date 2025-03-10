@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect,redirect
-from . forms import Signupform , Loginform  ,  Addbook ,Usercomment
+from . forms import Signupform , Loginform  ,  Addbook ,Usercomment,RatingForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from .models import Book ,  Rating, Like , Comment ,favourite
@@ -158,38 +158,34 @@ def book_like(request, id):
         return redirect('comment', id=comment.book.id)
 
 
-# def rate_book(request, pk, score):
-#     book = Book.objects.get(pk=pk)
-#     Rating.objects.update_or_create(user=request.user, book=book, defaults={'score': score})
-#     avg_rating = Rating.objects.filter(book=book).aggregate(Avg('score'))['score__avg'] or 0
-#     return render(request, 'bookdetails.html', {'book': book, 'avg_rating': avg_rating})
+def rate_book(request, pk):
+    book =Book.objects.get (pk=pk)
+    if request.method == 'POST':
+        form = RatingForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('viewsbook', pk=book.pk)
+    else:
+        form = RatingForm(instance=book)
+    
+    return render(request, 'rate_book.html', {'form': form,'book':book})
 
 
 
-# def fav_book(request, book_id):
-#     book = Book.objects.get(pk=book_id) 
+def fav_book(request, book_id):
+    book = Book.objects.get(pk=book_id) 
  
-#     fav, created = favourite.objects.get_or_create(user=request.user, book=book)
+    fav, created = favourite.objects.get_or_create(user=request.user, book=book)
 
-#     if not created:
-#         fav.delete() 
-#     return redirect('booklist') 
+    if not created:
+        fav.delete() 
+    return redirect('booklist') 
 
-# def favorite_books(request):
-#     fav_books = Book.objects.filter(favourites__user=request.user) 
-#     return render(request, 'favourite.html', {'fav_books': fav_books})
-
-
+def favorite_books(request):
+    fav_books = Book.objects.filter(favourite_book__user=request.user) 
+    return render(request, 'favoirate.html', {'fav_books': fav_books})
 
 
-
-
-    # book = Book.objects.get(pk=id)
-    # fav, created = favourite.objects.get_or_create(user=request.user, book=book)
-    # if not created:
-    #     fav.delete() 
-    #     return redirect('booklist')
-    # return render(request,'favoirate.html',{'book':book})
 
 
 

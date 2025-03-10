@@ -4,19 +4,8 @@
 <div class="col-sm-6" style='margin-top:10px;'>
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">{{book.book_name}}
-            {% comment %} <h3>Average Rating: {{ avg_rating|floatformat:1 }} ⭐</h3> {% endcomment %}
-            {% comment %} <div>
-                {% for i in "12345" %}
-                    <a href="{% url 'rate-book' book.id i|add:'0' %}">
-                        <i class="fa fa-star" style="color: {% if i|add:'0' <= avg_rating %}gold{% else %}gray{% endif %}; font-size: 25px;"></i>
-                    </a>
-                {% endfor %}
-            </div> {% endcomment %}
-
-
-
-        </h2>
+        <h5>Rating: {{ book.book_rating }} / 5</h5>
+        <h2 class="card-title">{{book.book_name}} </h2>
 
             <h6 class="card-subtitle mb-2 text-muted">Author : {{book.authors.all|join:" , "}}</h6>
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator,MaxValueValidator
 # Create your models here.
 class Author(models.Model):
     author_name=models.CharField(max_length=70)
@@ -9,7 +10,10 @@ class Author(models.Model):
 class Book(models.Model):
     book_name=models.CharField(max_length=200)
     authors=models.ManyToManyField(Author)
-    publish_year=models.DateField()
+    publish_year=models.DateField(null=True, blank=True)
+    book_cate=models.CharField(max_length=200,null=True, blank=True)
+    book_rating=models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(5)],default=0.0)
+
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])
     def __str__(self):

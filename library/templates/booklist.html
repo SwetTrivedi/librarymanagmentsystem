@@ -6,9 +6,14 @@
       <div class="col">
         <div class="card h-100">
             <div class="card-body ">
+                <h5>Rating: {{ book.book_rating }} / 5</h5>
                 <h5 class="card-title">{{book.book_name}}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Author : {{book.authors.all|join:" , "}}</h6>
                 <a href="{% url 'viewsbook' book.id %}" class="btn btn-sm btn-primary">View Details</a>
+                {% if perms.library_app.rate_book %}
+                {% else %}
+                  <a href="{% url 'rate_book' book.id %}"><input type="submit" value="Rate this book " class="btn btn-warning" ></a>
+                {% endif %}
             </div>
             {% if perms.library.backDashboard_book %}
             <form action="{% url 'adminpanel' %}"  class="d-inline">
@@ -16,19 +21,19 @@
                 <input type="submit" class="btn btn-success" value="back Dashboard">
             </form>
             {% else %}
-                <a href="{% url 'dashboard' %}"><input type="submit" class="btn btn-primary" value="Back Dashboard"></a>
-                    
-                {% comment %} <form action="{% url 'favbook' book.id %}" method="POST">
+                <a href="{% url 'dashboard' %}"><input type="submit" class="btn btn-sm btn-primary" value="Back Dashboard"></a>
+               <form action="{% url 'favbook' book.id %}" method="POST">
                     {% csrf_token %}
-                    <button type="submit">
-                        {% if book.favourites.all|length > 0 %}
-                        <i class="fa-regular fa-heart"></i>
+                        <button type="submit" class="btn btn-danger">
+                        {% if book.favourite.all|length > 0 %}
+                        <i class="fa-solid  fa-heart" style="color:red;"></i>
                         {% else %}
                         <i class="fa-regular fa-heart"></i>
                         {% endif %}
-                    </button>
-                </form> {% endcomment %}
-                    </a>
+                    </button> 
+                    
+                </form>
+                    
 
             {% endif %}
         </div>
