@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator,MaxValueValidator
+from datetime import timedelta, date
 # Create your models here.
 class Author(models.Model):
     author_name=models.CharField(max_length=70)
@@ -13,14 +14,15 @@ class Book(models.Model):
     publish_year=models.DateField(null=True, blank=True)
     book_cate=models.CharField(max_length=200,null=True, blank=True)
     book_rating=models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(5)],default=0.0)
+    total_copies = models.PositiveIntegerField(default=1)
+    available_copies = models.PositiveIntegerField(default=1)
 
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])
     def __str__(self):
         return self.book_name
 
-# class Feedback(models.Model):
-#     Comment=models.CharField(max_length=200)
+
 
 
 class Rating(models.Model):
@@ -39,13 +41,20 @@ class Comment(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    # def __str__(self):
-    #     return self.book
-
-    # def __str__(self):
-    #     return f"{self.user.username} liked {self.book.book_name}"
    
 
 class favourite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='favourite_book')
+
+
+
+class BorrowRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    borrow_date = models.DateField(auto_now_add=True)
+    return_date = models.DateField(null=True, blank=True)
+    due_date = models.DateField(default=date.today() + timedelta(days=14))  # 2 weeks
+    is_returned = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.user.username} borrowed {self.book.book_name}"

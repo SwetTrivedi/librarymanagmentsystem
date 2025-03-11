@@ -18,6 +18,10 @@
                     </button>
                 </form>
                 <span>Likes: {{ comment.total_likes }}</span>
+                <form action="{% url 'delcomment' id=comment.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
             </li>
         {% empty %}
             <li>No comments yet.</li>
