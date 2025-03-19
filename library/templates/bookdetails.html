@@ -1,47 +1,53 @@
 {% extends 'base.html' %}
 {% load  static %}
 {% block content %}
-<div class="col-sm-6" style='margin-top:10px;'>
-<div class="card">
-    <div class="card-body">
-        <h5>Rating: {{ book.book_rating }} / 5</h5>
-        <h2 class="card-title">{{book.book_name}} </h2>
 
-            <h6 class="card-subtitle mb-2 text-muted">Author : {{book.authors.all|join:" , "}}</h6>
-
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <p><strong>Published Date:</strong>{{book.publish_year}}
-                     &nbsp;&nbsp;<a href="{% url 'comment' book.id %}"><i class="fa-solid fa-comments" style="font-size:20px; margin-top:20px;"></i></a></i>
-                            Comments
-            </div>
-        </div>
+<div class="col-sm-6" style="margin-top:10px;">
+    <div class="card">
+        <div class="card-body">
+            <h5>Rating: {{ book.book_rating }} / 5</h5>
+            <h2 class="card-title">{{ book.book_name }}</h2>
+ 
+             <h6 class="card-subtitle mb-2 text-muted">
+                 Author: {{ book.authors.all|join:", " }}
+             </h6>
+ 
+             <div class="row mb-3">
+                 <div class="col-md-4">
+                     <p><strong>Published Date:</strong> {{ book.publish_year }}</p>
+                     <a href="{% url 'comment' book.id %}">
+                         <i class="fa-solid fa-comments" style="font-size:20px; margin-top:20px;"></i>
+                     </a>
+                     Comments
+                 </div>
+             </div>
+         </div>
+     </div>
+ 
+    <div class="mt-4">
+         {% if perms.library.delete_book %}
+             <form action="{% url 'deletebook' book.pk %}" method="post" class="d-inline">
+                 {% csrf_token %}
+                 <input type="submit" class="btn btn-danger" value="Delete">
+             </form>
+         {% endif %}
+ 
+         {% if perms.library.edit_book %}
+             <form action="{% url 'editbook' book.pk %}" class="d-inline">
+                 {% csrf_token %}
+                 <input type="submit" class="btn btn-warning" value="Edit">
+             </form>
+         {% endif %}
+ 
+         {% if book.available_copies > 0 %}
+             <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
+         {% endif %}
+        {% for borrow in book.borrow_set.all %}
+             {% if borrow.user == request.user %}
+                    <a href="{% url 'return_book' borrow.id %}"><input type="submit" value="Return"></a>
+             {% endif %}
+         {% endfor %}
+         <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
     </div>
-</div> 
-
-
-
-<div class="mt-4">
-    {% if perms.library.delete_book %}
-        <form action="{% url 'deletebook' book.pk %}" method='post' class="d-inline">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-danger" value="Delete">
-        </form>
-    {% endif %}
-
-    {% if perms.library.edit_book %}
-    <form action="{% url 'editbook' book.pk %}"  class="d-inline">
-        {% csrf_token %}
-        <input type="submit" class="btn btn-danger" value="Edit">
-    </form>
-    {% else %}
-        {% comment %} <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
-
-    <a href="{% url 'return_book' borrow.id %}" class="btn btn-danger">Return Book</a> {% endcomment %}
-    {% endif %}
-
-    <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
-</div>
-</div>
-{% endblock content %}
-
+ {% endblock content %}
+ 

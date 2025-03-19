@@ -6,6 +6,8 @@ from .models import Book ,  Rating, Like , Comment ,favourite
 from django.db.models import Q , Avg
 from django.core.paginator import Paginator
 from django .shortcuts import get_object_or_404
+from django.conf import settings
+import os
 # Create your views here.
 def home (request):
     return render(request,'home.html')
@@ -86,13 +88,14 @@ def book_list(request):
 
 def viewbooks(request,pk):
     book=Book.objects.get(pk=pk)
+    # pdf_path = os.path.join(settings.MEDIA_URL, 'sample.pdf')
     if request.method=='POST':
         text=request.POST.get('text')
     
         if text:
             Comment.objects.create(user=request.user,book=book,text=text)
             return redirect('viewsbook',pk=pk)
-    return render(request,'bookdetails.html',{'book':book })
+    return render(request,'bookdetails.html',{'book':book})
 
 def addbook(request):
     if request.user.is_authenticated:
@@ -100,6 +103,7 @@ def addbook(request):
             form=Addbook(request.POST)
             if form.is_valid():
                 book=form.save(commit=False)
+                print(book)
                 book.save()
                 book.authors.set(form.cleaned_data['authors'])
                 form= Addbook()
@@ -162,7 +166,6 @@ def book_like(request, id):
 
 def deletecomment(request, id):
     pi = get_object_or_404(Comment, id=id)
-    
     if request.user.is_superuser or request.user == pi.user:
         pi.delete()
         return HttpResponseRedirect('/booklist/')
@@ -181,16 +184,13 @@ def rate_book(request, pk):
             return redirect('viewsbook', pk=book.pk)
     else:
         form = RatingForm(instance=book)
-    
     return render(request, 'rate_book.html', {'form': form,'book':book})
 
 
 
 def fav_book(request, book_id):
     book = Book.objects.get(pk=book_id) 
- 
     fav, created = favourite.objects.get_or_create(user=request.user, book=book)
-
     if not created:
         fav.delete() 
     return redirect('booklist') 
@@ -201,36 +201,42 @@ def favorite_books(request):
 
 
 
-# from .models import Book, BorrowRecord
-# from datetime import date
-# def borrow_book(request, book_id):
-#     book = get_object_or_404(Book, id=book_id)
 
-#     if book.available_copies > 0:
-#         # Create a borrow record
-#         borrow = BorrowRecord.objects.create(user=request.user, book=book)
-#         book.available_copies -= 1
-#         book.save()
+
+from .models import Book, BorrowRecord
+from datetime import date
+def borrow_book(request, book_id):
+    if request.method=="POST":
+        book = get_object_or_404(Book, id=book_id)
+
+    if book.available_copies > 0:
+        borrow = BorrowRecord.objects.create(user=request.user, book=book)
+        book.available_copies -= 1
+        book.save()
         
-#         messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
-#     else:
-#         messages.error(request, "Sorry, this book is currently not available.")
+        messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
+    else:
+        messages.warning(request, "Sorry, this book is currently not available.")
     
-#     return redirect('home')
+    return render(request,'borrow.html')
 
 
-# def return_book(request, borrow_id):
-#     borrow = get_object_or_404(BorrowRecord, id=borrow_id, user=request.user)
+def return_book(request, borrow_id):
+    borrow = get_object_or_404(BorrowRecord, id=borrow_id, user=request.user)
 
-#     if not borrow.is_returned:
-#         borrow.is_returned = True
-#         borrow.return_date = date.today()
-#         borrow.book.available_copies += 1
-#         borrow.book.save()
-#         borrow.save()
+    if not borrow.is_returned:
+        borrow.is_returned = True
+        borrow.return_date = date.today()
+        borrow.book.available_copies += 1
+        borrow.book.save()
+        borrow.save()
 
-#         messages.success(request, f"You have successfully returned '{borrow.book.book_name}'.")
-    # else:
-    #     messages.warning(request, "This book is already returned.")
+        messages.success(request, f"You have successfully returned '{borrow.book.book_name}'.")
+    else:
+        messages.warning(request, "This book is already returned.")
 
-    # return redirect('home')
+    return redirect('home')
+
+
+
+

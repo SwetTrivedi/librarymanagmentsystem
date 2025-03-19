@@ -20,14 +20,14 @@ class Book(models.Model):
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])
     def __str__(self):
-        return self.book_name
+        return self.book_name 
 
 
 
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='ratings')
     score = models.IntegerField()
 
 class Comment(models.Model):
@@ -54,7 +54,7 @@ class BorrowRecord(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrow_date = models.DateField(auto_now_add=True)
     return_date = models.DateField(null=True, blank=True)
-    due_date = models.DateField(default=date.today() + timedelta(days=14))  # 2 weeks
+    due_date = models.DateField(default=date.today() + timedelta(days=14))
     is_returned = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.user.username} borrowed {self.book.book_name}"

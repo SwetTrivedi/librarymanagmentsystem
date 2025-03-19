@@ -38,6 +38,6 @@ urlpatterns = [
     path('favourite/<int:book_id>/', views.fav_book, name='favbook'),
     path('my-favorites/', views.favorite_books, name='favorite-books'),
     path('deletecomment/<int:id>/', views.deletecomment, name='delcomment'),
-    # path('borrow/<int:book_id>/',views.borrow_book, name='borrow_book'),
-    # path('return/<int:borrow_id>/', views.return_book, name='return_book'),
+    path('borrow/<int:book_id>/',views.borrow_book, name='borrow_book'),
+    path('return/<int:borrow_id>/', views.return_book, name='return_book'),
 ]

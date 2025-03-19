@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField
 from django.contrib.auth.models import User
 from django.utils.translation import gettext,gettext_lazy as _
-from .models import Book,Author,Comment
+from .models import Book,Author,Comment, BorrowRecord
 
 class Signupform(UserCreationForm):
     password1=forms.CharField(label="Password" ,widget=forms.PasswordInput(attrs={'class':'form-control'}))
@@ -74,4 +74,9 @@ class RatingForm(forms.ModelForm):
         model = Book
         fields=['book_rating']
 
+
+
+# class Borrowform(forms.ModelForm):
+#     class Meta:
+#         model=BorrowRecord
 
