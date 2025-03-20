@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect,redirect,HttpResponse
-from . forms import Signupform , Loginform  ,  Addbook ,Usercomment,RatingForm
+from . forms import Signupform , Loginform  ,  Addbook ,Usercomment,RatingForm,Borrowform
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from .models import Book ,  Rating, Like , Comment ,favourite
@@ -174,17 +174,21 @@ def deletecomment(request, id):
 
 
 
-
-def rate_book(request, pk):
-    book =Book.objects.get (pk=pk)
+def add_rating(request, pk):
+    book = get_object_or_404(Book, id=pk)
     if request.method == 'POST':
-        form = RatingForm(request.POST, instance=book)
+        form = RatingForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('viewsbook', pk=book.pk)
+            rating_value = form.cleaned_data['book_rating']
+            rating, created = Rating.objects.update_or_create(
+                user=request.user,
+                book=book,
+                defaults={'score': rating_value}
+            )
+            return redirect('viewsbook', pk=pk)
     else:
-        form = RatingForm(instance=book)
-    return render(request, 'rate_book.html', {'form': form,'book':book})
+        form = RatingForm()
+    return render(request, 'rate_book.html', {'form': form, 'book': book})
 
 
 
@@ -201,24 +205,24 @@ def favorite_books(request):
 
 
 
-
-
 from .models import Book, BorrowRecord
 from datetime import date
 def borrow_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
     if request.method=="POST":
-        book = get_object_or_404(Book, id=book_id)
-
-    if book.available_copies > 0:
-        borrow = BorrowRecord.objects.create(user=request.user, book=book)
-        book.available_copies -= 1
-        book.save()
-        
-        messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
+        form=Borrowform(request.POST,instance=book)
+        if form.is_valid():
+            if book.available_copies > 0:
+                borrow = BorrowRecord.objects.create(user=request.user, book=book)
+                book.available_copies -= 1
+                book.save()
+                
+                messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
+            else:
+                messages.warning(request, "Sorry, this book is currently not available.")
     else:
-        messages.warning(request, "Sorry, this book is currently not available.")
-    
-    return render(request,'borrow.html')
+        form=Borrowform()  
+    return render(request,'borrow.html',{"form":form})
 
 
 def return_book(request, borrow_id):
@@ -238,5 +242,15 @@ def return_book(request, borrow_id):
     return redirect('home')
 
 
+# from django.db.models import Avg
+# # from myapp.models import Book  # Apni app ka naam replace karo
+
+# def averagerating(request):
+#     average_rating = Book.objects.aggregate(Avg('rating'))['rating__avg'] or 0
+#     print(average_rating)
+#     return render(request, 'booklist.html', {'average_rating': round(average_rating, 2)})
 
 
+def borrowed_books(request):
+    borrowed_books = BorrowRecord.objects.filter(user=request.user)
+    return render(request, 'borrowed_book.html', {'borrowed_books': borrowed_books})

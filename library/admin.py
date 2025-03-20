@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Author
 # Register your models here.
-from .models import Book ,Rating,Comment,favourite,BorrowRecord
+from .models import Book ,Comment,favourite,BorrowRecord,Rating
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
@@ -9,15 +9,15 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display=['id','book_name','publish_year','book_cate','written_by','book_rating','total_copies','available_copies']
+    list_display=['id','book_name','book_sr_no','publish_year','book_cate','written_by','book_rating','total_copies','available_copies']
 
 # @admin.register(Feedback)
 # class FeedbackAdmin(admin.ModelAdmin):
 #     list_display=['comment']
 
-# @admin.register(Rating)
-# class RatingAdmin(admin.ModelAdmin):
-#     list_display=['user','book','score']
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    list_display=['user','book','score']
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
@@ -34,4 +34,4 @@ class FavAdmin(admin.ModelAdmin):
 
 @admin.register(BorrowRecord)
 class BorrowAdmin(admin.ModelAdmin):
-    list_display=['borrow_date','return_date','due_date','is_returned']
+    list_display=['user','book','borrow_date','return_date','due_date','is_returned']

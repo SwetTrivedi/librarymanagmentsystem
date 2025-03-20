@@ -15,12 +15,24 @@ class Book(models.Model):
     book_cate=models.CharField(max_length=200,null=True, blank=True)
     book_rating=models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(5)],default=0.0)
     total_copies = models.PositiveIntegerField(default=1)
-    available_copies = models.PositiveIntegerField(default=1)
-
+    available_copies = models.PositiveIntegerField(default=total_copies)
+    book_sr_no=models.CharField(max_length=10, unique=True)
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])
     def __str__(self):
-        return self.book_name 
+        return f"{self.book_name} ({self.book_sr_no} / {self.book_cate})"
+    
+
+    def update_average_rating(self):
+        ratings = Rating.objects.filter(book=self)
+        total_ratings = ratings.count()
+        if total_ratings > 0:
+            average = sum(r.score for r in ratings) / total_ratings
+            self.book_rating = round(average, 2)  
+        else:
+            self.book_rating = 0.0
+        self.save()
+
 
 
 
@@ -28,8 +40,11 @@ class Book(models.Model):
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='ratings')
-    score = models.IntegerField()
-
+    score = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.book.update_average_rating()
+        
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -58,3 +73,5 @@ class BorrowRecord(models.Model):
     is_returned = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.user.username} borrowed {self.book.book_name}"
+    def book_sr_no(self):
+        return self.book.book_sr_no

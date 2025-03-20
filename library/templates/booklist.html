@@ -7,12 +7,18 @@
         <div class="card h-100">
             <div class="card-body ">
                 <h5>Rating: {{ book.book_rating }} / 5</h5>
+                {% comment %} <h2>Average Rating: {{ average_rating }}</h2> {% endcomment %}
+                {% comment %} {% if average_rating %}
+                    <p>Average rating available: {{ average_rating }}</p>
+                {% else %}
+                    <p>No ratings yet.</p>
+                {% endif %} {% endcomment %}
                 <h5 class="card-title">{{book.book_name}}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Author : {{book.authors.all|join:" , "}}</h6>
                 <a href="{% url 'viewsbook' book.id %}" class="btn btn-sm btn-primary">View Details</a>
                 {% if perms.library_app.rate_book %}
                 {% else %}
-                  <a href="{% url 'rate_book' book.id %}"><input type="submit" value="Rate this book " class="btn btn-warning" ></a>
+                  <a href="{% url 'add-rating' book.id %}"><input type="submit" value="Rate this book " class="btn btn-warning" ></a>
                 {% endif %}
             </div>
             {% if perms.library.backDashboard_book %}

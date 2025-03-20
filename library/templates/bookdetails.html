@@ -39,15 +39,25 @@
              </form>
          {% endif %}
  
-         {% if book.available_copies > 0 %}
+         {% comment %} {% if book.available_copies > 0 %} {% endcomment %}
              <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
-         {% endif %}
+             <a href="{% url 'borrowed_books' %}" class="btn btn-info">My Borrowed Books</a>
+         {% comment %} {% endif %} {% endcomment %}
         {% for borrow in book.borrow_set.all %}
-             {% if borrow.user == request.user %}
-                    <a href="{% url 'return_book' borrow.id %}"><input type="submit" value="Return"></a>
-             {% endif %}
-         {% endfor %}
+            {% if borrow.user == request.user %}
+                    <a href="{% url 'return_book' borrow.id %}" class="btn btn-danger">Return</a>
+             {% endif %} 
+        {% endfor %} 
          <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
     </div>
  {% endblock content %}
  
+
+
+ {% comment %} Today I have Updated in the task that is library management system , in this task today i have updated the
+
+         borrow  and return concepts and also average rating system . 
+
+When the user borrows the book he would fillup the form after then he get the book . 
+
+Added the new functionality in this that is Book Serial number , Book category ,Total Book and Available books( after the borrow book )  .  {% endcomment %}

@@ -69,14 +69,25 @@ class Usercomment(forms.ModelForm):
         widgets={'text':forms.Textarea(attrs={'class': 'form-control'})}
 
 
-class RatingForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields=['book_rating']
-
-
-
-# class Borrowform(forms.ModelForm):
+# class RatingForm(forms.ModelForm):
 #     class Meta:
-#         model=BorrowRecord
+#         model = Book
+#         fields=['book_rating']
 
+
+
+class RatingForm(forms.Form):
+    book_rating = forms.FloatField(
+        min_value=0,
+        max_value=5,
+        widget=forms.NumberInput(attrs={'step':0.1}))
+
+class Borrowform(forms.ModelForm):
+    class Meta:
+        model=BorrowRecord
+        fields=['book','return_date','due_date']
+        widgets={
+                'book': forms.Select(attrs={'class': 'form-control'}),
+                'return_date':forms.TextInput(attrs={'class':'form-control'}),
+               'due_date':forms.TextInput(attrs={'class':'form-control'}),
+        }
