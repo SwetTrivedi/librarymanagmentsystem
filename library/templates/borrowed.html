@@ -1,20 +1,24 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 {% block content %}
-<h1 style="margin-top:20px; margin-left:20px; color:aqua;"><i>My Favorite Books</i></h1>
-<div class="row row-cols-2  row-cols-md-5 g-4" style='margin-top:50px; margin-left:5px;'>   
-    {% for book in fav_books %}
-    <div class="card" style="margin-left:50px;">
-        <div class="card-body">
-            <h2 class="card-title">{{book.book_name}}</h2>
-    
-                <h6 class="card-subtitle mb-2 text-muted">Author : {{book.authors.all|join:" , "}}</h6>
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                    <strong>Published Date:</strong>{{book.publish_year}}
-                </div>
+<h3 style="color:black;"class="my-4"></h3>
+<h2 style="margin-left:50px;"><i>My Borrowed Books</i></h2>
+{% if borrowed_books %}
+{% for book in borrowed_books %}
+    {% if not book.is_returned %}
+    <div class="row row-cols-1 row-cols-md-3 g-2" style="margin-left:50px;">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ book.book.book_name }}({{book.book.book_sr_no}}) / {{ book.book.book_cate }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Borrowed on: {{ book.borrow_date }}</h6>
             </div>
         </div>
-    </div>    
-    {% endfor %}
-<div>
-{% endblock %}
+    </div>
+    {% endif %}
+{% endfor %}
+{% else %}
+<div class="col-12">
+    <p>No books found.</p>
+</div>
+{% endif %}
+{% endblock content %}

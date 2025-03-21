@@ -5,7 +5,15 @@
 <div class="col-sm-6" style="margin-top:10px;">
     <div class="card">
         <div class="card-body">
-            <h5>Rating: {{ book.book_rating }} / 5</h5>
+            {% if perms.library.ratebook %}
+            {% else %}
+            {% if user_rating %}
+                <h5>Your Rating: {{ user_rating.score }} / 5</h5>
+            {% else %}
+                <p>You have not rated this book yet.</p>
+            {% endif %}
+            {% endif %}
+            <h5>Average_Rating: {{ book.book_rating }} / 5</h5>
             <h2 class="card-title">{{ book.book_name }}</h2>
  
              <h6 class="card-subtitle mb-2 text-muted">
@@ -32,32 +40,25 @@
              </form>
          {% endif %}
  
-         {% if perms.library.edit_book %}
+        {% if perms.library.edit_book %}
              <form action="{% url 'editbook' book.pk %}" class="d-inline">
                  {% csrf_token %}
                  <input type="submit" class="btn btn-warning" value="Edit">
              </form>
-         {% endif %}
+         {% else %}
+            {% if book.available_copies > 0 and not user_has_borrowed and not user_reached_limit %}
+                <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
+            {% elif user_reached_limit %}
+                    <p class="text-danger">You have reached the borrowing limit (5 books).</p>
+            {% endif %}
  
-         {% comment %} {% if book.available_copies > 0 %} {% endcomment %}
-             <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
-             <a href="{% url 'borrowed_books' %}" class="btn btn-info">My Borrowed Books</a>
-         {% comment %} {% endif %} {% endcomment %}
-        {% for borrow in book.borrow_set.all %}
-            {% if borrow.user == request.user %}
-                    <a href="{% url 'return_book' borrow.id %}" class="btn btn-danger">Return</a>
-             {% endif %} 
-        {% endfor %} 
+            {% for borrow in book.borrowrecord_set.all %}
+                {% if borrow.user == request.user and not borrow.is_returned %}
+                    <a href="{% url 'return_book' borrow.id %}" class="btn btn-success">Return</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
          <a href="{% url 'booklist' %}" class="btn btn-success">Back to List</a>
     </div>
  {% endblock content %}
  
-
-
- {% comment %} Today I have Updated in the task that is library management system , in this task today i have updated the
-
-         borrow  and return concepts and also average rating system . 
-
-When the user borrows the book he would fillup the form after then he get the book . 
-
-Added the new functionality in this that is Book Serial number , Book category ,Total Book and Available books( after the borrow book )  .  {% endcomment %}

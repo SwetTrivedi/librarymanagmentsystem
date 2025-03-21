@@ -50,7 +50,6 @@ def userlogin(request):
     
 
 def admindashboard(request):
-
     return render(request,'admindashboard.html')
 
 
@@ -83,27 +82,31 @@ def book_list(request):
         paginator=Paginator(allpost,5)
         pageno=request.GET.get('page')
         pageobj=paginator.get_page(pageno)
+
         return render(request,'booklist.html' ,{'books':pageobj})
      
 
 def viewbooks(request,pk):
     book=Book.objects.get(pk=pk)
-    # pdf_path = os.path.join(settings.MEDIA_URL, 'sample.pdf')
+    user_rating =Rating.objects.filter(book=book, user=request.user).first()
+    user_has_borrowed = book.borrowrecord_set.filter(user=request.user, is_returned=False).exists()
+    print(user_has_borrowed)
+    borrowed_books_count = BorrowRecord.objects.filter(user=request.user, is_returned=False).values('book').distinct().count()
+    user_reached_limit = borrowed_books_count >=5
     if request.method=='POST':
         text=request.POST.get('text')
     
         if text:
             Comment.objects.create(user=request.user,book=book,text=text)
             return redirect('viewsbook',pk=pk)
-    return render(request,'bookdetails.html',{'book':book})
+    return render(request,'bookdetails.html',{'book':book , 'user_has_borrowed':user_has_borrowed ,'user_reached_limit':user_reached_limit, 'user_rating':user_rating})
 
 def addbook(request):
-    if request.user.is_authenticated:
+    # if request.user.is_authenticated:
         if request.method=='POST':
             form=Addbook(request.POST)
             if form.is_valid():
                 book=form.save(commit=False)
-                print(book)
                 book.save()
                 book.authors.set(form.cleaned_data['authors'])
                 form= Addbook()
@@ -172,8 +175,6 @@ def deletecomment(request, id):
     else:
         return HttpResponse("You are not allowed to delete this comment.", status=403)
 
-
-
 def add_rating(request, pk):
     book = get_object_or_404(Book, id=pk)
     if request.method == 'POST':
@@ -188,7 +189,7 @@ def add_rating(request, pk):
             return redirect('viewsbook', pk=pk)
     else:
         form = RatingForm()
-    return render(request, 'rate_book.html', {'form': form, 'book': book})
+    return render(request, 'rate_book.html', {'form': form, 'book': book })
 
 
 
@@ -209,8 +210,11 @@ from .models import Book, BorrowRecord
 from datetime import date
 def borrow_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
+    already_borrowed = BorrowRecord.objects.filter(user=request.user, book=book, is_returned=False).exists()
+    if already_borrowed:
+        messages.error(request, f"You have already borrowed '{book.book_name}'.")
     if request.method=="POST":
-        form=Borrowform(request.POST,instance=book)
+        form=Borrowform(request.POST)
         if form.is_valid():
             if book.available_copies > 0:
                 borrow = BorrowRecord.objects.create(user=request.user, book=book)
@@ -241,16 +245,13 @@ def return_book(request, borrow_id):
 
     return redirect('home')
 
-
-# from django.db.models import Avg
-# # from myapp.models import Book  # Apni app ka naam replace karo
-
-# def averagerating(request):
-#     average_rating = Book.objects.aggregate(Avg('rating'))['rating__avg'] or 0
-#     print(average_rating)
-#     return render(request, 'booklist.html', {'average_rating': round(average_rating, 2)})
-
-
-def borrowed_books(request):
+def my_borrowed_books(request):
     borrowed_books = BorrowRecord.objects.filter(user=request.user)
-    return render(request, 'borrowed_book.html', {'borrowed_books': borrowed_books})
+    returned_books = borrowed_books.filter(is_returned=True)
+    not_returned_books = borrowed_books.filter(is_returned=False)  
+
+    return render(request, 'borrowed.html', {
+        'borrowed_books':borrowed_books,
+        'not_returned_books': not_returned_books,
+        'returned_books': returned_books
+        })

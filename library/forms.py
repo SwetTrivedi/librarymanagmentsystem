@@ -69,12 +69,6 @@ class Usercomment(forms.ModelForm):
         widgets={'text':forms.Textarea(attrs={'class': 'form-control'})}
 
 
-# class RatingForm(forms.ModelForm):
-#     class Meta:
-#         model = Book
-#         fields=['book_rating']
-
-
 
 class RatingForm(forms.Form):
     book_rating = forms.FloatField(
