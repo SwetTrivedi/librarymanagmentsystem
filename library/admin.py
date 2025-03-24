@@ -34,4 +34,4 @@ class FavAdmin(admin.ModelAdmin):
 
 @admin.register(BorrowRecord)
 class BorrowAdmin(admin.ModelAdmin):
-    list_display=['user','book','borrow_date','return_date','due_date','is_returned']
+    list_display=['user','book','borrow_date','return_date','due_date','is_returned','book_sr_no','book_cate']

@@ -209,7 +209,7 @@ def favorite_books(request):
 from .models import Book, BorrowRecord
 from datetime import date
 def borrow_book(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
+    book = Book.objects.get(id=book_id)
     already_borrowed = BorrowRecord.objects.filter(user=request.user, book=book, is_returned=False).exists()
     if already_borrowed:
         messages.error(request, f"You have already borrowed '{book.book_name}'.")
@@ -225,7 +225,7 @@ def borrow_book(request, book_id):
             else:
                 messages.warning(request, "Sorry, this book is currently not available.")
     else:
-        form=Borrowform()  
+        form=Borrowform(initial={'BookName':book.book_name,"BookCategory":book.book_cate ,'BookSerialNo':book.book_sr_no})  
     return render(request,'borrow.html',{"form":form})
 
 

@@ -20,7 +20,7 @@ class Book(models.Model):
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])
     def __str__(self):
-        return f"{self.book_name} ({self.book_sr_no} / {self.book_cate})"
+        return f"{self.book_name}"
     
 
     def update_average_rating(self):
@@ -75,3 +75,6 @@ class BorrowRecord(models.Model):
         return f"{self.user.username} borrowed {self.book.book_name}"
     def book_sr_no(self):
         return self.book.book_sr_no
+    
+    def book_cate(self):
+        return self.book.book_cate
