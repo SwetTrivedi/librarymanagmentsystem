@@ -15,7 +15,7 @@ class Book(models.Model):
     book_cate=models.CharField(max_length=200,null=True, blank=True)
     book_rating=models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(5)],default=0.0)
     total_copies = models.PositiveIntegerField(default=1)
-    available_copies = models.PositiveIntegerField(default=total_copies)
+    available_copies = models.PositiveIntegerField(default=1)
     book_sr_no=models.CharField(max_length=10, unique=True)
     def written_by(self):
         return "  , ".join([str(p) for p in self.authors.all()])

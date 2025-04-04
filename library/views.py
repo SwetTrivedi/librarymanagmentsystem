@@ -102,14 +102,17 @@ def viewbooks(request,pk):
     return render(request,'bookdetails.html',{'book':book , 'user_has_borrowed':user_has_borrowed ,'user_reached_limit':user_reached_limit, 'user_rating':user_rating})
 
 def addbook(request):
-    # if request.user.is_authenticated:
+    if request.user.is_authenticated:
         if request.method=='POST':
             form=Addbook(request.POST)
             if form.is_valid():
                 book=form.save(commit=False)
                 book.save()
-                book.authors.set(form.cleaned_data['authors'])
-                form= Addbook()
+                # book.authors.set(form.cleaned_data['authors'])
+                # form= Addbook()
+                if 'authors' in form.cleaned_data:
+                    book.authors.set(form.cleaned_data['authors'])  # ManyToMany relation set karo
+                form = Addbook()
     
         else:
             form= Addbook()
